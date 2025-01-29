@@ -1,0 +1,27 @@
+services:
+  app:
+    container_name: task-list
+    build: .
+    ports:
+      - "9000:80"
+    volumes:
+      - ./task-list:/var/www/html
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: task_list
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - 9001:80
+
+volumes:
+  mysql-data:
+    name: mysql-data
