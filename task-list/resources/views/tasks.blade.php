@@ -2,10 +2,11 @@
 <div>
     @section('title', 'Tasks')
     @section('content')
+        <a href="/task/create">Create</a>
         <ul>
             @forelse ($tasks as $task)
                 <li>
-                    <a href='{{ route('task', ['id' => $task->id]) }}'>
+                    <a href='{{ route('task', ['task' => $task->id]) }}'>
                         {{ $task->title }}
                     </a>
                 </li>
