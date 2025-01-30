@@ -67,16 +67,7 @@ Route::get('/tasks', function () {
     ]);
 })->name("tasks");
 
-Route::view("/task/create", "create");
-
-Route::get("/task/update/{task}", function (Task $task) {
-    return view('update', ['task' => $task]);
-});
-
-Route::get("/task/{task}", function (Task $task) {
-    return view("task", ["task" => $task]);
-})->name("task");
-
+Route::view("/task/create", "form");
 
 Route::post('/task', function (TaskRequest $request) {
     $task = Task::create($request->validated());
@@ -84,10 +75,27 @@ Route::post('/task', function (TaskRequest $request) {
 })->name('create');
 
 
+
+
+Route::get("/task/{task}", function (Task $task) {
+    return view("task", ["task" => $task]);
+})->name("task");
+
+
+Route::get("/task/update/{task}", function (Task $task) {
+    return view('form', ['task' => $task]);
+});
+
 Route::put('/task/{task}', function (Task $task, TaskRequest $request) {
     $task->update($request->validated());
     return redirect()->route('task', ['task' => $task->id])->with('success', 'Task updated successfully');
 })->name('update');
+
+Route::delete('/task/delete/{task}', function (Task $task) {
+    $task->delete();
+
+    return redirect()->route('tasks')->with('success', 'Task deleted successfully');
+})->name('delete');
 
 Route::fallback(function () {
     return "Opps! Page not found";

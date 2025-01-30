@@ -14,4 +14,9 @@
         <p>Updated At: {{ $task->updated_at }}</p>
         <input type="checkbox" checked={{ $task->completed }} />
     </div>
+    <form action="{{ route('delete', ['task' => $task->id]) }}" method="post">
+        @csrf
+        @method('delete')
+        <button type="submit">Delete</button>
+    </form>
 @endsection
