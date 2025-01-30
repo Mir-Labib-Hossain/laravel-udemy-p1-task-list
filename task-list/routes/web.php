@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Requests\TaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
 // class Task
@@ -78,35 +78,14 @@ Route::get("/task/{task}", function (Task $task) {
 })->name("task");
 
 
-Route::post('/task', function (Request $request) {
-    $payload = $request->validate([
-        'title' => 'required|max:255',
-        'description' => 'required',
-        'long_description' => 'required',
-    ]);
-
-    $task = new Task;
-    $task->title = $payload['title'];
-    $task->description = $payload['description'];
-    $task->long_description = $payload['long_description'];
-
-    $task->save();
+Route::post('/task', function (TaskRequest $request) {
+    $task = Task::create($request->validated());
     return redirect()->route('task', ['task' => $task->id])->with('success', 'Task created successfully');
 })->name('create');
 
 
-Route::put('/task/{task}', function (Task $task, Request $request) {
-    $payload = $request->validate([
-        'title' => 'required|max:255',
-        'description' => 'required',
-        'long_description' => 'required',
-    ]);
-
-    $task->title = $payload['title'];
-    $task->description = $payload['description'];
-    $task->long_description = $payload['long_description'];
-
-    $task->save();
+Route::put('/task/{task}', function (Task $task, TaskRequest $request) {
+    $task->update($request->validated());
     return redirect()->route('task', ['task' => $task->id])->with('success', 'Task updated successfully');
 })->name('update');
 
