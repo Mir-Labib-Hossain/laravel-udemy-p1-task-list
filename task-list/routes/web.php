@@ -63,7 +63,7 @@ Route::get("/", function () {
 
 Route::get('/tasks', function () {
     return view('tasks', [
-        "tasks" => Task::all()
+        "tasks" => Task::latest()->paginate(5)
     ]);
 })->name("tasks");
 

@@ -15,8 +15,8 @@
             @endforelse
         </ul>
     @endsection
-    {{-- @else
-        <p>No tasks</p>
-    @endif --}}
+    @if ($tasks->count())
+        {{ $tasks->links() }}
+    @endif
 
 </div>
