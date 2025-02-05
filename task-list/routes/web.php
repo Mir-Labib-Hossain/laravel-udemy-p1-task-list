@@ -2,100 +2,46 @@
 
 use App\Http\Requests\TaskRequest;
 use App\Models\Task;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// class Task
-// {
-//     public function __construct(
-//         public int $id,
-//         public string $title,
-//         public string $description,
-//         public ?string $long_description,
-//         public bool $completed,
-//         public string $created_at,
-//         public string $updated_at
-//     ) {}
-// }
-
-// $tasks = [
-//     new Task(
-//         1,
-//         'Buy groceries',
-//         'Task 1 description',
-//         'Task 1 long description',
-//         false,
-//         '2023-03-01 12:00:00',
-//         '2023-03-01 12:00:00'
-//     ),
-//     new Task(
-//         2,
-//         'Sell old stuff',
-//         'Task 2 description',
-//         null,
-//         false,
-//         '2023-03-02 12:00:00',
-//         '2023-03-02 12:00:00'
-//     ),
-//     new Task(
-//         3,
-//         'Learn programming',
-//         'Task 3 description',
-//         'Task 3 long description',
-//         true,
-//         '2023-03-03 12:00:00',
-//         '2023-03-03 12:00:00'
-//     ),
-//     new Task(
-//         4,
-//         'Take dogs for a walk',
-//         'Task 4 description',
-//         null,
-//         false,
-//         '2023-03-04 12:00:00',
-//         '2023-03-04 12:00:00'
-//     ),
-// ];
 
 Route::get("/", function () {
-    return redirect("/tasks");
+    return redirect("/list");
 })->name("home");
 
-Route::get('/tasks', function () {
-    return view('tasks', [
-        "tasks" => Task::latest()->paginate(5)
-    ]);
-})->name("tasks");
+Route::get('/list', function () {
+    return view('list', ["tasks" => Task::latest()->paginate(5)]);
+})->name("list.view");
 
-Route::view("/task/create", "form");
-
-Route::post('/task', function (TaskRequest $request) {
-    $task = Task::create($request->validated());
-    return redirect()->route('task', ['task' => $task->id])->with('success', 'Task created successfully');
-})->name('create');
-
-
-
-
-Route::get("/task/{task}", function (Task $task) {
-    return view("task", ["task" => $task]);
-})->name("task");
-
-
-Route::get("/task/update/{task}", function (Task $task) {
+Route::view("/create", "form")->name('create.view');
+Route::get("/update/{task}", function (Task $task) {
     return view('form', ['task' => $task]);
-});
+})->name('update.view');
 
-Route::put('/task/{task}', function (Task $task, TaskRequest $request) {
+Route::post('/create', function (TaskRequest $request) {
+    $task = Task::create($request->validated());
+    return redirect()->route('details.view', ['task' => $task->id])->with('success', 'Task created successfully');
+})->name('create.api');
+
+Route::get("/details/{task}", function (Task $task) {
+    return view("details", ["task" => $task]);
+})->name("details.view");
+
+
+Route::put('/update/{task}', function (Task $task, TaskRequest $request) {
     $task->update($request->validated());
-    return redirect()->route('task', ['task' => $task->id])->with('success', 'Task updated successfully');
-})->name('update');
+    return redirect()->route('details.view', ['task' => $task->id])->with('success', 'Task updated successfully');
+})->name('update.api');
 
-Route::delete('/task/delete/{task}', function (Task $task) {
+Route::put('/toggle-complete/{task}', function (Task $task) {
+    $task->toggleComplete();
+    return redirect()->back()->with('success', 'Task status updated.');
+})->name('toggle.api');
+
+Route::delete('/delete/{task}', function (Task $task) {
     $task->delete();
-
-    return redirect()->route('tasks')->with('success', 'Task deleted successfully');
-})->name('delete');
+    return redirect()->route('list.view')->with('success', 'Task deleted successfully');
+})->name('delete.api');
 
 Route::fallback(function () {
     return "Opps! Page not found";
